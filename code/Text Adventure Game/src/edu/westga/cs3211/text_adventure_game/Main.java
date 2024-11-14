@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 /** Entry point for the program​
  *​
- * @author CS 3211​
+ * @author Jennifer Alvarez​
  * @version Fall 2024​
  */
 public class Main extends Application {
