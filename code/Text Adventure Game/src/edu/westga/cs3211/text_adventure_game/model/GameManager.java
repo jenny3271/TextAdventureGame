@@ -2,6 +2,7 @@ package edu.westga.cs3211.text_adventure_game.model;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,12 +15,14 @@ import java.util.Map;
 public class GameManager {
 	private Location currentLocation;
 	private Map<String, Location> locations;
+	private Player player;
 
 	/**
 	 * Constructs a new GameManager and initializes the locations.
 	 */
 	public GameManager() {
 		this.locations = new HashMap<>();
+		this.player = new Player();
 		this.loadWorldInformation("resources/world.txt");
 	}
 
@@ -49,6 +52,15 @@ public class GameManager {
 	}
 
 	/**
+	 * Gets the player.
+	 * 
+	 * @return the player
+	 */
+	public Player getPlayer() {
+		return this.player;
+	}
+
+	/**
 	 * Moves the player to a new location based on the specified direction.
 	 * 
 	 * @param direction the direction to move
@@ -57,6 +69,7 @@ public class GameManager {
 		Location newLocation = this.currentLocation.getConnectedLocations().get(direction);
 		if (newLocation != null) {
 			this.currentLocation = newLocation;
+			this.checkForHazards();
 		}
 	}
 
@@ -67,5 +80,46 @@ public class GameManager {
 	 */
 	public Map<String, Location> getLocations() {
 		return this.locations;
+	}
+
+	/**
+	 * Executes an action at the current location.
+	 * 
+	 * @param action the action to perform
+	 */
+	public void performAction(Action action) {
+		if (this.currentLocation.getAvailableActions().contains(action)) {
+			action.execute(this.player);
+		}
+	}
+
+	/**
+	 * Checks if the current location has a hazard and applies it to the player.
+	 */
+	public void checkForHazards() {
+		Location currentLocation = this.getCurrentLocation();
+	    List<Hazard> hazards = currentLocation.getHazards();
+	    Player player = this.getPlayer();
+
+	    for (Hazard hazard : hazards) {
+	        player.setHealth(player.getHealth() - hazard.getDamage());
+	    }
+	}
+
+	/**
+	 * Checks if the game is over.
+	 * 
+	 * @return true if the game is over, false otherwise
+	 */
+	public boolean isGameOver() {
+		return this.player.getStatus() == PlayerStatus.DEAD || this.currentLocation.isGoal();
+	}
+
+	/**
+	 * Restarts the game from the beginning.
+	 */
+	public void restartGame() {
+		this.player = new Player();
+		this.currentLocation = this.locations.get("Start");
 	}
 }

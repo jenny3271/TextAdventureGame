@@ -1,5 +1,5 @@
 Start|This is the starting location.|NORTH:Forest|EAST:Cave|SOUTH:River
-Forest|A dense forest with towering trees.|SOUTH:Start|EAST:Mountain|HAZARD
+Forest|A dense forest with towering trees.|SOUTH:Start|EAST:Mountain|HAZARD:Fire:20
 Cave|A dark, damp cave.|WEST:Start|GOAL
 River|A flowing river with clear water.|NORTH:Start|EAST:Village
 Mountain|A tall mountain with a snowy peak.|WEST:Forest

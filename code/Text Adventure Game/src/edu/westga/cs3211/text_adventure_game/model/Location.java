@@ -1,13 +1,15 @@
 package edu.westga.cs3211.text_adventure_game.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Represents a location in the text adventure game. Each location has a name,
- * description, and can contain a hazard or be a goal location. It also manages 
- * available actions for the player and connected locations to facilitate movement.
+ * description, and can contain a hazard or be a goal location. It also manages
+ * available actions for the player and connected locations to facilitate
+ * movement.
  * 
  * @author Jennifer Alvarez
  * @version Fall 2024
@@ -17,19 +19,27 @@ public class Location {
 	private String description;
 	private boolean hasHazard;
 	private boolean isGoal;
-	private List<String> availableActions;
+	private List<Action> availableActions;
+	private List<Hazard> hazards;
 	private Map<Direction, Location> connectedLocations;
-	
+
 	/**
-     * Creates a new Location with the specified name and description.
-     * 
-     * @param name        the name of the location
-     * @param description the description of the location
-     */
+	 * Creates a new Location with the specified name and description.
+	 * 
+	 * @param name        the name of the location
+	 * @param description the description of the location
+	 */
 	public Location(String name, String description) {
+		if (name == null || name.isEmpty()) {
+			throw new IllegalArgumentException("Name cannot be null or empty.");
+		}
+		if (description == null || description.trim().isEmpty()) {
+			throw new IllegalArgumentException("Description cannot be null or empty.");
+		}
 		this.name = name;
 		this.description = description;
 		this.connectedLocations = new HashMap<>();
+		this.hazards = new ArrayList<>();
 	}
 
 	/**
@@ -47,6 +57,9 @@ public class Location {
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
+		if (name == null || name.isEmpty()) {
+			throw new IllegalArgumentException("Name cannot be null or empty.");
+		}
 		this.name = name;
 	}
 
@@ -65,6 +78,9 @@ public class Location {
 	 * @param description the description to set
 	 */
 	public void setDescription(String description) {
+		if (description == null || description.trim().isEmpty()) {
+			throw new IllegalArgumentException("Description cannot be null or empty.");
+		}
 		this.description = description;
 	}
 
@@ -79,6 +95,7 @@ public class Location {
 
 	/**
 	 * Sets whether the location has a hazard
+	 * 
 	 * @param hasHazard true if the location has a hazard, false otherwise
 	 */
 	public void setHasHazard(boolean hasHazard) {
@@ -108,7 +125,7 @@ public class Location {
 	 * 
 	 * @return the availableActions at the current location
 	 */
-	public List<String> getAvailableActions() {
+	public List<Action> getAvailableActions() {
 		return this.availableActions;
 	}
 
@@ -117,38 +134,62 @@ public class Location {
 	 * 
 	 * @param availableActions the availableActions to set
 	 */
-	public void setAvailableActions(List<String> availableActions) {
+	public void setAvailableActions(List<Action> availableActions) {
 		this.availableActions = availableActions;
 	}
 
 	/**
+	 * Gets the hazards at the current location.
+	 * 
+	 * @return the hazards at the current location
+	 */
+	public List<Hazard> getHazards() {
+		return this.hazards;
+	}
+
+	/**
+	 * Sets the hazards at the current location.
+	 * 
+	 * @param hazards the hazards to set
+	 */
+	public void setHazards(List<Hazard> hazards) {
+		this.hazards = hazards;
+	}
+	
+	/**
+	 * Adds the hazard
+	 * 
+	 * @param hazard the hazard to add
+	 */
+	public void addHazard(Hazard hazard) {
+        this.hazards.add(hazard);
+    }
+
+	/**
 	 * Gets the connected locations from the current location
+	 * 
 	 * @return the connectedLocations from the current location
 	 */
 	public Map<Direction, Location> getConnectedLocations() {
 		return this.connectedLocations;
 	}
-	
+
 	/**
 	 * Adds a connected location in a specified direction.
-     * 
-     * @param direction the direction of the connected location
-     * @param location the connected location
+	 * 
+	 * @param direction the direction of the connected location
+	 * @param location  the connected location
 	 */
 	public void addConnectedLocation(Direction direction, Location location) {
 		this.connectedLocations.put(direction, location);
 	}
-	
-	 @Override
-	    public String toString() {
-	        return "Location{" 
-	        		+ "name='" + this.name + System.lineSeparator()
-	                + "description='" + this.description + System.lineSeparator()
-	                + "hasHazard=" + this.hasHazard + System.lineSeparator() 
-	                + "isGoal=" + this.isGoal + System.lineSeparator()
-	                + "connectedLocations=" + this.connectedLocations.keySet() + System.lineSeparator() 
-	                + "availableActions=" + this.availableActions
-	                + '}';
-	    }
-	
+
+	@Override
+	public String toString() {
+		return "Location{" + "name='" + this.name + System.lineSeparator() + "description='" + this.description
+				+ System.lineSeparator() + "hasHazard=" + this.hasHazard + System.lineSeparator() + "isGoal="
+				+ this.isGoal + System.lineSeparator() + "connectedLocations=" + this.connectedLocations.keySet()
+				+ System.lineSeparator() + "availableActions=" + this.availableActions + '}';
+	}
+
 }
