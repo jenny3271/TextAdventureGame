@@ -18,7 +18,7 @@ public class Location {
 	private boolean hasHazard;
 	private boolean isGoal;
 	private List<String> availableActions;
-	private Map<String, Location> connectedLocations;
+	private Map<Direction, Location> connectedLocations;
 	
 	/**
      * Creates a new Location with the specified name and description.
@@ -125,7 +125,7 @@ public class Location {
 	 * Gets the connected locations from the current location
 	 * @return the connectedLocations from the current location
 	 */
-	public Map<String, Location> getConnectedLocations() {
+	public Map<Direction, Location> getConnectedLocations() {
 		return this.connectedLocations;
 	}
 	
@@ -135,7 +135,7 @@ public class Location {
      * @param direction the direction of the connected location
      * @param location the connected location
 	 */
-	public void addConnectedLocation(String direction, Location location) {
+	public void addConnectedLocation(Direction direction, Location location) {
 		this.connectedLocations.put(direction, location);
 	}
 	
