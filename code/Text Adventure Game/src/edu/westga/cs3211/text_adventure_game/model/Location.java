@@ -40,6 +40,7 @@ public class Location {
 		this.description = description;
 		this.connectedLocations = new HashMap<>();
 		this.hazards = new ArrayList<>();
+		this.availableActions = new ArrayList<>();
 	}
 
 	/**
@@ -155,15 +156,15 @@ public class Location {
 	public void setHazards(List<Hazard> hazards) {
 		this.hazards = hazards;
 	}
-	
+
 	/**
 	 * Adds the hazard
 	 * 
 	 * @param hazard the hazard to add
 	 */
 	public void addHazard(Hazard hazard) {
-        this.hazards.add(hazard);
-    }
+		this.hazards.add(hazard);
+	}
 
 	/**
 	 * Gets the connected locations from the current location
@@ -181,15 +182,11 @@ public class Location {
 	 * @param location  the connected location
 	 */
 	public void addConnectedLocation(Direction direction, Location location) {
-		this.connectedLocations.put(direction, location);
-	}
-
-	@Override
-	public String toString() {
-		return "Location{" + "name='" + this.name + System.lineSeparator() + "description='" + this.description
-				+ System.lineSeparator() + "hasHazard=" + this.hasHazard + System.lineSeparator() + "isGoal="
-				+ this.isGoal + System.lineSeparator() + "connectedLocations=" + this.connectedLocations.keySet()
-				+ System.lineSeparator() + "availableActions=" + this.availableActions + '}';
+		if (!this.connectedLocations.containsKey(direction)) {
+			this.connectedLocations.put(direction, location);
+			this.availableActions
+					.add(new Action(direction.name(), "Move to " + location.getName().toLowerCase(), location));
+		}
 	}
 
 }

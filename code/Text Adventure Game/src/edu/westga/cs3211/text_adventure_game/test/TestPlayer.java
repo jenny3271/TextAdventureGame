@@ -1,24 +1,48 @@
 package edu.westga.cs3211.text_adventure_game.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import edu.westga.cs3211.text_adventure_game.model.Action;
+import edu.westga.cs3211.text_adventure_game.model.Location;
 import edu.westga.cs3211.text_adventure_game.model.Player;
 import edu.westga.cs3211.text_adventure_game.model.PlayerStatus;
 
 public class TestPlayer {
 	private Player player;
+	private Location startLocation;
+    private Location forestLocation;
 
     @BeforeEach
     void setUp() {
         this.player = new Player();
+        this.startLocation = new Location("Start", "This is the starting location.");
+        this.forestLocation = new Location("Forest", "A dense forest with towering trees.");
+    }
+    
+    @Test
+    public void testGetCurrentLocationInitiallyNull() {
+        assertNull(this.player.getCurrentLocation());
+    }
+
+    @Test
+    public void testGetCurrentLocationAfterSetting() {
+        this.player.setCurrentLocation(this.startLocation);
+        assertEquals(this.startLocation, this.player.getCurrentLocation());
+    }
+    
+    @Test
+    public void testGetCurrentLocationAfterChangingLocation() {
+        this.player.setCurrentLocation(this.startLocation);
+        assertEquals(this.startLocation, this.player.getCurrentLocation());
+
+        this.player.setCurrentLocation(this.forestLocation);
+        assertEquals(this.forestLocation, this.player.getCurrentLocation());
     }
 
     @Test
@@ -59,42 +83,6 @@ public class TestPlayer {
         this.player.addItemToInventory("Shield");
         this.player.removeItemFromInventory("Shield");
         assertTrue(this.player.getInventory().isEmpty());
-    }
-    
-    @Test
-    void testTakeActionAvailable() {
-        Action mockAction = new Action("Mock Action", "This is a mock action.") {
-            @Override
-            public void execute(Player player) {
-                player.addItemToInventory("Mock Item");
-            }
-
-            @Override
-            public boolean isAvailable(Player player) {
-                return true;
-            }
-        };
-
-        this.player.takeActionAvailable(mockAction);
-        assertTrue(this.player.getInventory().contains("Mock Item"));
-    }
-    
-    @Test
-    void testTakeActionNotAvailable() {
-        Action mockAction = new Action("Mock Action", "This is a mock action.") {
-            @Override
-            public void execute(Player player) {
-                player.addItemToInventory("Mock Item");
-            }
-
-            @Override
-            public boolean isAvailable(Player player) {
-                return false;
-            }
-        };
-
-        this.player.takeActionAvailable(mockAction);
-        assertFalse(this.player.getInventory().contains("Mock Item"));
     }
     
     @Test

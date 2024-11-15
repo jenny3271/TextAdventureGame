@@ -14,6 +14,7 @@ public class Player {
 	private static final int INITIAL_HEALTH = 100;
 	private int health;
 	private PlayerStatus status;
+	private Location currentLocation;
 	private List<String> inventory;
 
 	/**
@@ -61,6 +62,24 @@ public class Player {
 	}
 
 	/**
+	 * Sets the current location of the player.
+	 * 
+	 * @param newLocation the new location to set
+	 */
+	public void setCurrentLocation(Location newLocation) {
+		this.currentLocation = newLocation;
+	}
+
+	/**
+	 * Gets the current location of the player.
+	 * 
+	 * @return the current location
+	 */
+	public Location getCurrentLocation() {
+		return this.currentLocation;
+	}
+
+	/**
 	 * Gets the inventory of the player.
 	 * 
 	 * @return the inventory
@@ -85,19 +104,6 @@ public class Player {
 	 */
 	public void removeItemFromInventory(String item) {
 		this.inventory.remove(item);
-	}
-
-	/**
-	 * Takes an action if it is available.
-	 * 
-	 * @param action the action to take
-	 */
-	public void takeActionAvailable(Action action) {
-		if (action.isAvailable(this)) {
-			action.execute(this);
-		} else {
-			System.out.println("Action " + action.getName() + " is not available.");
-		}
 	}
 
 	/**

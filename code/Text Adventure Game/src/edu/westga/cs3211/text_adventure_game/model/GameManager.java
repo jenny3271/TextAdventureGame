@@ -1,6 +1,7 @@
 package edu.westga.cs3211.text_adventure_game.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map;
 public class GameManager {
 	private Location currentLocation;
 	private Map<String, Location> locations;
+	private List<Action> actions;
 	private Player player;
 
 	/**
@@ -22,6 +24,7 @@ public class GameManager {
 	 */
 	public GameManager() {
 		this.locations = new HashMap<>();
+		this.actions = new ArrayList<>();
 		this.player = new Player();
 		this.loadWorldInformation("resources/world.txt");
 	}
@@ -36,10 +39,21 @@ public class GameManager {
 		try {
 			this.locations = loader.loadWorld(fileName);
 			this.currentLocation = this.locations.get("Start");
+			this.extractActions();
 		} catch (IOException exception) {
 			System.out.print(exception.getMessage());
 			this.currentLocation = null;
 		}
+	}
+
+	/**
+	 * Sets the current location of the player.
+	 * 
+	 * @param newLocation the new location to set
+	 */
+	public void setCurrentLocation(Location newLocation) {
+		this.currentLocation = newLocation;
+		this.checkForHazards();
 	}
 
 	/**
@@ -83,6 +97,15 @@ public class GameManager {
 	}
 
 	/**
+	 * Gets all the actions available in the game.
+	 * 
+	 * @return a list of all actions
+	 */
+	public List<Action> getActions() {
+		return this.actions;
+	}
+
+	/**
 	 * Executes an action at the current location.
 	 * 
 	 * @param action the action to perform
@@ -90,6 +113,9 @@ public class GameManager {
 	public void performAction(Action action) {
 		if (this.currentLocation.getAvailableActions().contains(action)) {
 			action.execute(this.player);
+			if (action.getNewLocation() != null) {
+				this.setCurrentLocation(action.getNewLocation());
+			}
 		}
 	}
 
@@ -98,12 +124,12 @@ public class GameManager {
 	 */
 	public void checkForHazards() {
 		Location currentLocation = this.getCurrentLocation();
-	    List<Hazard> hazards = currentLocation.getHazards();
-	    Player player = this.getPlayer();
+		List<Hazard> hazards = currentLocation.getHazards();
+		Player player = this.getPlayer();
 
-	    for (Hazard hazard : hazards) {
-	        player.setHealth(player.getHealth() - hazard.getDamage());
-	    }
+		for (Hazard hazard : hazards) {
+			player.setHealth(player.getHealth() - hazard.getDamage());
+		}
 	}
 
 	/**
@@ -121,5 +147,16 @@ public class GameManager {
 	public void restartGame() {
 		this.player = new Player();
 		this.currentLocation = this.locations.get("Start");
+	}
+
+	/**
+	 * Extracts actions from the loaded locations.
+	 */
+	private void extractActions() {
+		for (Location location : this.locations.values()) {
+			if (location.getAvailableActions() != null) {
+				this.actions.addAll(location.getAvailableActions());
+			}
+		}
 	}
 }

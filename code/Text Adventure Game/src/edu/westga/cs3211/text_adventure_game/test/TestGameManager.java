@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import edu.westga.cs3211.text_adventure_game.model.Action;
 import edu.westga.cs3211.text_adventure_game.model.Direction;
 import edu.westga.cs3211.text_adventure_game.model.GameManager;
+import edu.westga.cs3211.text_adventure_game.model.Hazard;
 import edu.westga.cs3211.text_adventure_game.model.Location;
-import edu.westga.cs3211.text_adventure_game.model.Player;
 import edu.westga.cs3211.text_adventure_game.model.WorldLoader;
 
 class TestGameManager {
@@ -74,35 +74,21 @@ class TestGameManager {
 
     @Test
     void testPerformAction() {
-        Action mockAction = new Action("Mock Action", "This is a mock action.") {
-            @Override
-            public void execute(Player player) {
-                player.addItemToInventory("Mock Item");
-            }
+    	Action mockActionWithNewLocation = new Action("Mock Action", "This is a mock action.", new Location("New Location", "A new location."));
+        Action mockActionWithoutNewLocation = new Action("Mock Action", "This is a mock action.");
 
-            @Override
-            public boolean isAvailable(Player player) {
-                return true;
-            }
-        };
-
-        this.gameManager.getCurrentLocation().setAvailableActions(List.of(mockAction));
-        this.gameManager.performAction(mockAction);
-        assertTrue(this.gameManager.getPlayer().getInventory().contains("Mock Item"));
+        this.gameManager.getCurrentLocation().setAvailableActions(List.of(mockActionWithNewLocation, mockActionWithoutNewLocation));
+        
+        this.gameManager.performAction(mockActionWithNewLocation);
+        assertEquals("New Location", this.gameManager.getCurrentLocation().getName());
+        
+        this.gameManager.performAction(mockActionWithoutNewLocation);
+        assertEquals("New Location", this.gameManager.getCurrentLocation().getName());
     }
 
     @Test
     void testPerformActionNotAvailable() {
         Action unavailableAction = new Action("Unavailable Action", "This action is not available.") {
-            @Override
-            public void execute(Player player) {
-                player.addItemToInventory("Unavailable Item");
-            }
-
-            @Override
-            public boolean isAvailable(Player player) {
-                return false;
-            }
         };
 
         this.gameManager.getCurrentLocation().setAvailableActions(List.of());
@@ -112,11 +98,13 @@ class TestGameManager {
 
     @Test
     void testIsGameOver() {
-        this.gameManager.getCurrentLocation().setGoal(true);
+    	this.gameManager.getPlayer().setHealth(0);
         assertTrue(this.gameManager.isGameOver());
-
-        this.gameManager.getCurrentLocation().setGoal(false);
-        this.gameManager.getPlayer().setHealth(0);
+        
+        this.gameManager.getPlayer().setHealth(100);
+        Location goalLocation = new Location("Goal Location", "This is the goal.");
+        goalLocation.setGoal(true);
+        this.gameManager.setCurrentLocation(goalLocation);
         assertTrue(this.gameManager.isGameOver());
     }
     
@@ -129,9 +117,14 @@ class TestGameManager {
 
     @Test
     void testCheckForHazards() {
-        this.gameManager.loadWorldInformation("resources/world.txt");
-        this.gameManager.moveToLocation(Direction.NORTH);
-        assertEquals(80, this.gameManager.getPlayer().getHealth());
+    	Location hazardLocation = new Location("Hazard Location", "This location has hazards.");
+        Hazard mockHazard = new Hazard("Mock Hazard", 10);
+        hazardLocation.addHazard(mockHazard);
+        this.gameManager.setCurrentLocation(hazardLocation);
+
+        int initialHealth = this.gameManager.getPlayer().getHealth();
+        this.gameManager.checkForHazards();
+        assertEquals(initialHealth - 10, this.gameManager.getPlayer().getHealth());
     }
 
     @Test
@@ -141,5 +134,20 @@ class TestGameManager {
         this.gameManager.restartGame();
         assertEquals(100, this.gameManager.getPlayer().getHealth(), "Player health should be reset to 100");
         assertEquals("Start", this.gameManager.getCurrentLocation().getName(), "Current location should be reset to Start");
+    }
+    
+    @Test
+    void testGetActions() {
+        List<Action> actions = this.gameManager.getActions();
+        assertNotNull(actions);
+        assertFalse(actions.isEmpty());
+    }
+
+    @Test
+    void testExtractActions() {
+        this.gameManager.loadWorldInformation("resources/world.txt");
+        List<Action> actions = this.gameManager.getActions();
+        assertNotNull(actions);
+        assertFalse(actions.isEmpty());
     }
 }

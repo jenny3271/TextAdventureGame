@@ -23,7 +23,7 @@ public class WorldLoader {
      */
     public Map<String, Location> loadWorld(String fileName) throws IOException {
         Map<String, Location> locations = new HashMap<>();
-
+        
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = reader.readLine()) != null) {

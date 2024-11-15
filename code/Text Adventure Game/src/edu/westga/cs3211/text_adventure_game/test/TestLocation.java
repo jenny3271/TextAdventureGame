@@ -118,29 +118,6 @@ class TestLocation {
     }
     
     @Test
-    void testToString() {
-        this.location.setHasHazard(true);
-        this.location.setGoal(true);
-        Action lookAction = new Action("Look", "Look around the area.");
-        Action moveAction = new Action("Move", "Move to a different location.");
-        List<Action> actions = Arrays.asList(lookAction, moveAction);
-        this.location.setAvailableActions(actions);
-        Location forest = new Location("Forest", "A dense forest.");
-        this.location.addConnectedLocation(Direction.NORTH, forest);
-
-        String expected = "Location{" +
-                "name='Start" + System.lineSeparator() +
-                "description='This is the starting location." + System.lineSeparator() +
-                "hasHazard=true" + System.lineSeparator() +
-                "isGoal=true" + System.lineSeparator() +
-                "connectedLocations=[NORTH]" + System.lineSeparator() +
-                "availableActions=[" + lookAction.toString() + ", " + moveAction.toString() + "]" +
-                '}';
-
-        assertEquals(expected, this.location.toString());
-    }
-    
-    @Test
     void testSetHazards() {
         Hazard fire = new Hazard("Fire", 20);
         Hazard flood = new Hazard("Flood", 15);
